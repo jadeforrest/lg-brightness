@@ -18,21 +18,21 @@ sleep 2
 # LG UltraFine 5K typically shows as display 1
 DISPLAY_ID=1
 
-# Use ddcctl to toggle brightness: set to 99%, then back to 100%
+# Use m1ddc (preferred) or ddcctl to toggle brightness: set to 99%, then back to 100%
 # This forces the DDC/CI command to be sent to the monitor
-if command -v ddcctl &> /dev/null; then
-    log_message "Using ddcctl to toggle brightness"
-    ddcctl -d "$DISPLAY_ID" -b 99 >> "$LOG_FILE" 2>&1
-    sleep 0.2
-    ddcctl -d "$DISPLAY_ID" -b 100 >> "$LOG_FILE" 2>&1
-    log_message "Brightness fix complete"
-elif command -v m1ddc &> /dev/null; then
+if command -v m1ddc &> /dev/null; then
     log_message "Using m1ddc to toggle brightness"
     m1ddc set luminance 99 "$DISPLAY_ID" >> "$LOG_FILE" 2>&1
     sleep 0.2
     m1ddc set luminance 100 "$DISPLAY_ID" >> "$LOG_FILE" 2>&1
     log_message "Brightness fix complete"
+elif command -v ddcctl &> /dev/null; then
+    log_message "Using ddcctl to toggle brightness"
+    ddcctl -d "$DISPLAY_ID" -b 99 >> "$LOG_FILE" 2>&1
+    sleep 0.2
+    ddcctl -d "$DISPLAY_ID" -b 100 >> "$LOG_FILE" 2>&1
+    log_message "Brightness fix complete"
 else
-    log_message "ERROR: Neither ddcctl nor m1ddc found. Please install one."
+    log_message "ERROR: Neither m1ddc nor ddcctl found. Please install one."
     exit 1
 fi
