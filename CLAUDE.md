@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a macOS utility that automatically fixes an LG UltraFine 5K monitor brightness bug where the display doesn't restore to full brightness after waking from sleep. The solution uses `sleepwatcher` to detect wake events and `ddcctl` (or `m1ddc`) to send DDC/CI commands to the monitor.
+This is a macOS utility that automatically fixes an LG UltraFine 5K monitor brightness bug where the display doesn't restore to full brightness after waking from sleep. The solution uses `sleepwatcher` to detect wake events and `m1ddc` to send DDC/CI commands to the monitor.
 
 ## Core Architecture
 
@@ -18,8 +18,7 @@ The system consists of three main components:
 
 - `sleepwatcher` monitors system sleep/wake events via a LaunchAgent
 - On wake, it executes `fix-lg-brightness.sh`
-- The script waits 2 seconds for system stabilization, then uses DDC/CI tools to toggle brightness
-- Supports both `ddcctl` (primary) and `m1ddc` (fallback) for DDC/CI communication
+- The script waits 2 seconds for system stabilization, then uses `m1ddc` to toggle brightness
 - All activity is logged to `~/Library/Logs/lg-brightness-fix.log`
 
 ### LaunchAgent Configuration
@@ -51,7 +50,7 @@ launchctl list | grep sleepwatcher
 
 Find the correct display ID if not display 1:
 ```bash
-ddcctl -l
+m1ddc detect
 ```
 
 ## Installation/Uninstallation
@@ -65,28 +64,27 @@ Uninstall:
 ```bash
 ./uninstall.sh
 # Optionally remove Homebrew packages:
-brew uninstall sleepwatcher ddcctl
+brew uninstall sleepwatcher m1ddc
 ```
 
 ## Key Implementation Details
 
 - **Display ID**: Hardcoded to `1` in fix-lg-brightness.sh (line 19). Edit if LG monitor uses different ID.
 - **Wake delay**: 2-second sleep after wake (line 15) allows system to stabilize before sending DDC/CI commands.
-- **Brightness toggle timing**: 0.2-second delay between 99% and 100% commands (lines 26, 32) ensures commands are distinct.
+- **Brightness toggle timing**: 0.2-second delay between 99% and 100% commands ensures commands are distinct.
 - **Logging**: All script activity appends to `~/Library/Logs/lg-brightness-fix.log` with timestamps.
-- **Tool fallback**: Checks for `ddcctl` first, falls back to `m1ddc` if not found.
 
 ## Dependencies
 
 - macOS (Apple Silicon or Intel)
 - Homebrew
 - sleepwatcher (via Homebrew)
-- ddcctl or m1ddc (via Homebrew)
+- m1ddc (via Homebrew)
 
 ## Common Issues
 
 If the brightness fix doesn't work:
 1. Verify sleepwatcher is running: `ps aux | grep sleepwatcher` and `launchctl list | grep sleepwatcher`. If LastExitStatus is not 0, sleepwatcher failed to start.
-2. Verify display ID with `ddcctl -l` and update DISPLAY_ID in fix-lg-brightness.sh
+2. Verify display ID with `m1ddc detect` and update DISPLAY_ID in fix-lg-brightness.sh
 3. Check Terminal has Accessibility permissions (System Settings → Privacy & Security → Accessibility)
 4. Review error logs at `~/Library/Logs/sleepwatcher.error.log`

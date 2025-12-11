@@ -23,12 +23,12 @@ else
     echo "sleepwatcher already installed"
 fi
 
-# Install ddcctl
-echo "Installing ddcctl..."
-if ! brew list ddcctl &> /dev/null; then
-    brew install ddcctl
+# Install m1ddc
+echo "Installing m1ddc..."
+if ! brew list m1ddc &> /dev/null; then
+    brew install m1ddc
 else
-    echo "ddcctl already installed"
+    echo "m1ddc already installed"
 fi
 
 # Create LaunchAgent plist for sleepwatcher
