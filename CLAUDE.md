@@ -28,7 +28,8 @@ The installer creates `~/Library/LaunchAgents/de.bernhard-baehr.sleepwatcher.pli
 - Runs sleepwatcher with verbose mode (`-V`)
 - Watches for wake events (`-w`) and executes the fix script
 - Keeps the daemon alive continuously
-- Handles both Apple Silicon (`/opt/homebrew/bin`) and Intel (`/usr/local/bin`) Homebrew paths
+- Handles both Apple Silicon (`/opt/homebrew/sbin`) and Intel (`/usr/local/sbin`) Homebrew paths
+- **Note**: sleepwatcher installs to `sbin`, not `bin`
 
 ## Testing
 
@@ -85,6 +86,7 @@ brew uninstall sleepwatcher ddcctl
 ## Common Issues
 
 If the brightness fix doesn't work:
-1. Verify display ID with `ddcctl -l` and update DISPLAY_ID in fix-lg-brightness.sh
-2. Check Terminal has Accessibility permissions (System Settings → Privacy & Security → Accessibility)
-3. Review error logs at `~/Library/Logs/sleepwatcher.error.log`
+1. Verify sleepwatcher is running: `ps aux | grep sleepwatcher` and `launchctl list | grep sleepwatcher`. If LastExitStatus is not 0, sleepwatcher failed to start.
+2. Verify display ID with `ddcctl -l` and update DISPLAY_ID in fix-lg-brightness.sh
+3. Check Terminal has Accessibility permissions (System Settings → Privacy & Security → Accessibility)
+4. Review error logs at `~/Library/Logs/sleepwatcher.error.log`

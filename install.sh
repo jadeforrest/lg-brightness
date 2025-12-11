@@ -45,7 +45,7 @@ cat > "$PLIST_FILE" << EOF
     <string>de.bernhard-baehr.sleepwatcher</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/sleepwatcher</string>
+        <string>/opt/homebrew/sbin/sleepwatcher</string>
         <string>-V</string>
         <string>-w</string>
         <string>$WAKEUP_SCRIPT</string>
@@ -63,14 +63,14 @@ cat > "$PLIST_FILE" << EOF
 EOF
 
 # Check if using Intel or Apple Silicon for correct brew path
-if [ -d "/opt/homebrew/bin" ]; then
-    BREW_BIN="/opt/homebrew/bin/sleepwatcher"
-elif [ -d "/usr/local/bin" ]; then
-    BREW_BIN="/usr/local/bin/sleepwatcher"
+if [ -d "/opt/homebrew/sbin" ]; then
+    BREW_BIN="/opt/homebrew/sbin/sleepwatcher"
+elif [ -d "/usr/local/sbin" ]; then
+    BREW_BIN="/usr/local/sbin/sleepwatcher"
     # Update plist with Intel path
-    sed -i '' 's|/opt/homebrew/bin/sleepwatcher|/usr/local/bin/sleepwatcher|g' "$PLIST_FILE"
+    sed -i '' 's|/opt/homebrew/sbin/sleepwatcher|/usr/local/sbin/sleepwatcher|g' "$PLIST_FILE"
 else
-    echo "ERROR: Cannot find Homebrew bin directory"
+    echo "ERROR: Cannot find Homebrew sbin directory"
     exit 1
 fi
 
