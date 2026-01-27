@@ -18,15 +18,20 @@ sleep 2
 # LG UltraFine 5K typically shows as display 1
 DISPLAY_ID=1
 
-# Use m1ddc to toggle brightness: set to 99%, then back to 100%
-# This forces the DDC/CI command to be sent to the monitor
-if command -v m1ddc &> /dev/null; then
-    log_message "Using m1ddc to toggle brightness"
-    m1ddc set luminance 99 "$DISPLAY_ID" >> "$LOG_FILE" 2>&1
-    sleep 0.2
-    m1ddc set luminance 100 "$DISPLAY_ID" >> "$LOG_FILE" 2>&1
-    log_message "Brightness fix complete"
+# Determine m1ddc location (Apple Silicon vs Intel Mac)
+if [ -x "/opt/homebrew/bin/m1ddc" ]; then
+    M1DDC="/opt/homebrew/bin/m1ddc"
+elif [ -x "/usr/local/bin/m1ddc" ]; then
+    M1DDC="/usr/local/bin/m1ddc"
 else
     log_message "ERROR: m1ddc not found. Please install it with: brew install m1ddc"
     exit 1
 fi
+
+# Use m1ddc to toggle brightness: set to 99%, then back to 100%
+# This forces the DDC/CI command to be sent to the monitor
+log_message "Using m1ddc to toggle brightness"
+"$M1DDC" set luminance 99 "$DISPLAY_ID" >> "$LOG_FILE" 2>&1
+sleep 0.2
+"$M1DDC" set luminance 100 "$DISPLAY_ID" >> "$LOG_FILE" 2>&1
+log_message "Brightness fix complete"
